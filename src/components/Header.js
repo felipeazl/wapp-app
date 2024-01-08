@@ -2,19 +2,29 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native"
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import LogoSVG from "./svg/Logo";
+import UserModal from "./UserModal";
+import { useState } from "react";
 
-export default function Header() {
+export default function Header({ navigation }) {
+    const [userModal, setUserModal] = useState(false)
+
+    function showUserModal() {
+        setUserModal(!userModal)
+    }
+
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.circleContainer}>
+            <TouchableOpacity style={styles.circleContainer} onPress={() => navigation.navigate('Devices')}>
                 <Feather name="menu" size={32} color="black" />
             </TouchableOpacity>
             <View>
                 <LogoSVG width={74} height={24} />
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={showUserModal}>
                 <Ionicons name="person-circle" size={42} color="black" />
             </TouchableOpacity>
+            {userModal ? <UserModal navigation={navigation} /> : null}
+
         </View>
     )
 }

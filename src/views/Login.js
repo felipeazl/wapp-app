@@ -4,29 +4,56 @@ import InputField from "../components/InputField";
 import LogoSVG from "../components/svg/Logo";
 import SubmitButton from "../components/SubmitButton";
 import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebase";
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation, setUser }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [disableButton, setDisableButton] = useState(true);
+
+    function handleInputChange(email, password) {
+        setEmail(email);
+        setPassword(password);
+
+        const isValid = email.length > 0 && password.length > 0;
+        setDisableButton(!isValid);
+    };
+
+    const handleLogin = () => {
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                setEmail('');
+                setPassword('');
+                setUser(user);
+                navigation.navigate('Home')
+            })
+            .catch((error) => {
+                const errorCode = error.codel;
+                const errorMessage = error.message;
+                alert(`${errorCode}: ${errorMessage}`)
+            })
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
                 <View style={styles.logo}>
                     <LogoSVG width={146} height={47} />
                 </View>
-                <InputField label={'Email'} type={'email'} value={email} handleChangeText={(value) => setEmail(value)} />
-                <InputField label={'Senha'} type={'password'} value={password} handleChangeText={(value) => setPassword(value)} />
-                <SubmitButton label={'Login'} onPress={() => navigation.navigate('Home')} isDisable={disableButton} />
+                <InputField label={'Email'} type={'email'} value={email} handleChangeText={(value) => handleInputChange(value, password)} />
+                <InputField label={'Senha'} type={'password'} value={password} handleChangeText={(value) => handleInputChange(email, value)} />
+                <SubmitButton label={'Login'} onPress={handleLogin} isDisable={disableButton} />
                 <View style={styles.options}>
                     <View style={styles.line} />
                     <Text style={styles.optionText}>ou</Text>
                     <View style={styles.line} />
                 </View>
                 <View style={styles.toRegister}>
-                    <Text style={styles.text}>Já tem cadastro?</Text>
+                    <Text style={styles.text}>Ainda não tem cadastro?</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                        <Text style={styles.link}>Fazer login</Text>
+                        <Text style={styles.link}>Criar conta</Text>
                     </TouchableOpacity>
                 </View>
             </View>

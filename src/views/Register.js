@@ -3,8 +3,10 @@ import InputField from "../components/InputField";
 import LogoSVG from "../components/svg/Logo";
 import SubmitButton from "../components/SubmitButton";
 import { useEffect, useState } from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebase";
 
-export default function RegisterScreen({ navigation }) {
+export default function RegisterScreen({ navigation, setUser }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,10 +23,20 @@ export default function RegisterScreen({ navigation }) {
     };
 
     function handleRegistration() {
-        alert(email + password + confirmPassword);
-        setEmail('')
-        setPassword('')
-        setConfirmPassword('')
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                setEmail('');
+                setPassword('');
+                setConfirmPassword('');
+                setUser(user);
+                navigation.navigate('Login')
+            })
+            .catch((error) => {
+                const errorCode = error.codel;
+                const errorMessage = error.message;
+                alert(`${errorCode}: ${errorMessage}`)
+            })
     }
 
     return (
@@ -43,9 +55,9 @@ export default function RegisterScreen({ navigation }) {
                     <View style={styles.line} />
                 </View>
                 <View style={styles.toLogin}>
-                    <Text style={styles.text}>Ainda não tem cadastro?</Text>
+                    <Text style={styles.text}>Já tem cadastro?</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                        <Text style={styles.link}>Criar conta</Text>
+                        <Text style={styles.link}>Fazer login</Text>
                     </TouchableOpacity>
                 </View>
             </View>

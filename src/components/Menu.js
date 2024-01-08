@@ -3,7 +3,12 @@ import { View, TouchableOpacity, Text, StyleSheet, ImageBackground } from 'react
 import { Feather } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 
-export default function BottomMenu() {
+export default function BottomMenu({ modalAction, modalState }) {
+
+    function showModal() {
+        modalAction(!modalState)
+    }
+
     return (
         <ImageBackground
             source={require('./images/bottomMenuBackground.png')}
@@ -13,7 +18,7 @@ export default function BottomMenu() {
                 <TouchableOpacity style={styles.tab}>
                     <Feather name="bar-chart-2" size={32} color="black" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.centerTab}>
+                <TouchableOpacity style={styles.centerTab} onPress={showModal}>
                     <Feather name="plus" size={40} color="black" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.tab}>
